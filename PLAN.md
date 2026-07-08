@@ -29,7 +29,7 @@
 |------|------|------|------|---------|
 | 1 | 项目设置与依赖 | ✅ **已通过** | 无 | `mvn compile` BUILD SUCCESS |
 | 2 | 核心模型与枚举 | ⏳ | 1 | — |
-| 3 | Tool 接口 + ToolRegistry | ⏳ | 2 | — |
+| 3 | Tool 接口 + ToolRegistry | ✅ **已通过** | 2 | 4/4 测试通过，评审 clean |
 | 4 | LLMProvider + MockLLM | ⏳ | 2 | — |
 | 5 | ReadFile + WriteFile | ⏳ | 3 | — |
 | 6 | ExecuteShell | ⏳ | 3 | — |

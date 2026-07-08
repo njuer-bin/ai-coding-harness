@@ -6,7 +6,6 @@ import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 public class ExecuteShellTool implements Tool {
-    private static final long DEFAULT_TIMEOUT_MS = 30_000;
 
     @Override
     public String getName() { return "EXECUTE_COMMAND"; }
@@ -20,7 +19,7 @@ public class ExecuteShellTool implements Tool {
             pb.redirectErrorStream(false);
             Process process = pb.start();
 
-            boolean finished = process.waitFor(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            boolean finished = process.waitFor(getTimeoutMs(), TimeUnit.MILLISECONDS);
             if (!finished) {
                 process.destroyForcibly();
                 long duration = System.currentTimeMillis() - start;

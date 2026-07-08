@@ -6,7 +6,17 @@
       "Bash(git commit *)",
       "Bash(mvn test *)",
       "Bash(mvn compile *)",
-      "Bash(mvn clean *)"
+      "Bash(mvn clean *)",
+      "Bash(git rm *)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/task-brief\" PLAN.md 3)",
+      "Bash(mkdir -p \"/c/ai暑校/untitled/src/test/java/com/codingagent/tool\")",
+      "Bash(mkdir -p \"/c/ai暑校/untitled/src/main/java/com/codingagent/tool\")",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" 39a45a23a158bb18eb4a694f3678d7184c5810bb HEAD)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" 8c0a970 HEAD)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/task-brief\" PLAN.md 5)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" 811562563a08b455f541fda2dc5bbdeef94a0e5c HEAD)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/task-brief\" PLAN.md 6)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" 426cb71ccc86a7a84b1bdc953be73214c384e24c HEAD)"
     ]
   }
 }
