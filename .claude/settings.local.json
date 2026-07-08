@@ -25,7 +25,8 @@
       "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" 16f14bfc1a30bf34234cc44e8dc69ebfa9da5627 HEAD)",
       "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" 16f14bfc1a30bf34234cc44e8dc69ebfa9da5627 418ed20)",
       "Bash(mvn test-compile *)",
-      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" c1588c2869d55e982599d5945721fe25794f96a8 HEAD)"
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" c1588c2869d55e982599d5945721fe25794f96a8 HEAD)",
+      "Bash(bash \"C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package\" b6e1e8c9f90e036edb124119f5e7e48ccb32f58a HEAD)"
     ]
   }
 }

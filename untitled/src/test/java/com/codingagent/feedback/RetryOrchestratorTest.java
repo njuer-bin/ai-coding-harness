@@ -18,12 +18,12 @@ class RetryOrchestratorTest {
     }
 
     @Test
-    void testTimeoutRetryLimited() {
+    void testTimeoutRetryAllowed() {
         RetryOrchestrator orchestrator = new RetryOrchestratorImpl();
         Feedback feedback = new Feedback();
         feedback.setStatus(com.codingagent.model.enums.FeedbackStatus.FAIL);
         feedback.setCategory(FailureCategory.TIMEOUT);
-        feedback.setRetryCount(1);
+        feedback.setRetryCount(0);
         assertTrue(orchestrator.shouldRetry(feedback));
     }
 
@@ -43,7 +43,7 @@ class RetryOrchestratorTest {
         Feedback feedback = new Feedback();
         feedback.setStatus(com.codingagent.model.enums.FeedbackStatus.FAIL);
         feedback.setCategory(FailureCategory.TIMEOUT);
-        feedback.setRetryCount(2);
+        feedback.setRetryCount(1);
         assertFalse(orchestrator.shouldRetry(feedback));
     }
 

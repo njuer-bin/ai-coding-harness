@@ -21,7 +21,7 @@ public class RetryOrchestratorImpl implements RetryOrchestrator {
         baseMaxRetries.put(FailureCategory.COMPILE_ERROR, 3);
         baseMaxRetries.put(FailureCategory.TEST_FAILURE, 3);
         baseMaxRetries.put(FailureCategory.LINT_ERROR, 2);
-        baseMaxRetries.put(FailureCategory.TIMEOUT, 2);
+        baseMaxRetries.put(FailureCategory.TIMEOUT, 1);
         baseMaxRetries.put(FailureCategory.EXECUTION_ERROR, 2);
         baseMaxRetries.put(FailureCategory.UNKNOWN, 1);
     }
