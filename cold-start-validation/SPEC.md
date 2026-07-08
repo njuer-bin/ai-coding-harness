@@ -189,7 +189,7 @@
 | 项目 | 说明 |
 |------|------|
 | **输入** | Action 对象 |
-| **行为** | 规则匹配：BLOCK 危险命令、REQUIRE_HITL 敏感操作、ALLOW 安全操作。**同步拦截高危文件写入路径**（如写入 `/etc/`、系统关键路径）。路径检测前先通过 `Path.normalize()` 规范化，防止 `../../etc/shadow` 等相对路径穿越绕过 |
+| **行为** | 规则匹配：BLOCK 危险命令、REQUIRE_HITL 敏感操作、ALLOW 安全操作。**同步拦截高危文件写入路径**（如写入 `/etc/`、系统关键路径） |
 | **输出** | GuardrailResult(BLOCK / ALLOW / REQUIRE_HITL, 原因) |
 | **边界条件** | 空命令 → ALLOW；空路径 → ALLOW |
 | **错误处理** | 规则配置错误 → 默认 BLOCK（安全优先） |

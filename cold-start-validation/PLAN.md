@@ -17,34 +17,7 @@
 - 每个核心机制必须有 MockLLM 驱动的确定性单元测试，不依赖网络和真实 LLM
 - 遵循 TDD：先写失败测试 → 再写最小实现 → 再重构
 - 工具执行超时默认 30s，可配置
-- 项目目录：`untitled/`（Maven 项目根目录，位于仓库根目录下）
-- MockLLM 内部使用非线程安全的 Queue，标注为"非线程安全"，单线程测试环境使用
-- Guardrail 路径匹配前先通过 `Path.normalize()` 规范化，防止相对路径穿越
-
----
-
-## Task 完成状态总表
-
-| Task | 描述 | 状态 | 依赖 | 验证结果 |
-|------|------|------|------|---------|
-| 1 | 项目设置与依赖 | ✅ **已通过** | 无 | `mvn compile` BUILD SUCCESS |
-| 2 | 核心模型与枚举 | ⏳ | 1 | — |
-| 3 | Tool 接口 + ToolRegistry | ⏳ | 2 | — |
-| 4 | LLMProvider + MockLLM | ⏳ | 2 | — |
-| 5 | ReadFile + WriteFile | ⏳ | 3 | — |
-| 6 | ExecuteShell | ⏳ | 3 | — |
-| 7 | RunTests + GlobListFiles + SearchCode | ⏳ | 3 | — |
-| 8 | Git + LintCheck | ⏳ | 3 | — |
-| 9 | Guardrail | ⏳ | 2 | — |
-| 10 | Validator | ⏳ | 2 | — |
-| 11 | FailureClassifier | ⏳ | 2 | — |
-| 12 | RetryOrchestrator | ⏳ | 2 | — |
-| 13 | Memory | ⏳ | 2 | — |
-| 14 | Config + CredentialManager | ⏳ | 2 | — |
-| 15 | Engine 主循环 | ⏳ | 4,9,10,11,12,13,14 | — |
-| 16 | CLI 层 | ⏳ | 15 | — |
-| 17 | DeepSeekProvider | ⏳ | 4 | — |
-| 18 | 机制演示脚本 | ⏳ | 4,9,10,11,12 | — |
+- 项目目录：`untitled/`（Maven 项目根目录）
 
 ---
 
@@ -152,7 +125,7 @@ Task 1 (项目设置)
 
 ---
 
-### Task 1: 项目设置与依赖（✅ 已完成）
+### Task 1: 项目设置与依赖
 
 **Files:**
 - Modify: `untitled/pom.xml`
@@ -162,7 +135,7 @@ Task 1 (项目设置)
 - Consumes: 无
 - Produces: 可编译的 Maven 项目骨架
 
-- [x] **Step 1: 更新 pom.xml 添加依赖**
+- [ ] **Step 1: 更新 pom.xml 添加依赖**
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -225,7 +198,7 @@ Task 1 (项目设置)
 </project>
 ```
 
-- [x] **Step 2: 创建包目录结构**
+- [ ] **Step 2: 创建包目录结构**
 
 ```bash
 mkdir -p untitled/src/main/java/com/codingagent/model/enums
@@ -245,14 +218,14 @@ mkdir -p untitled/src/test/java/com/codingagent/config
 mkdir -p untitled/src/test/java/com/codingagent/engine
 ```
 
-- [x] **Step 3: 验证编译**
+- [ ] **Step 3: 验证编译**
 
 ```bash
 cd untitled && mvn compile
 ```
 Expected: BUILD SUCCESS
 
-- [x] **Step 4: 提交**
+- [ ] **Step 4: 提交**
 
 ```bash
 git add untitled/pom.xml
@@ -1444,11 +1417,10 @@ public class GuardrailImpl implements Guardrail {
             }
         }
 
-        // 检查高危文件写入路径（先规范化再匹配）
+        // 检查高危文件写入路径
         if ("WRITE_FILE".equals(type)) {
-            String normalizedPath = Path.of(path).normalize().toString();
             for (String dangerousPath : DANGEROUS_PATHS) {
-                if (normalizedPath.startsWith(dangerousPath)) {
+                if (path.startsWith(dangerousPath)) {
                     return GuardrailResult.BLOCK;
                 }
             }
