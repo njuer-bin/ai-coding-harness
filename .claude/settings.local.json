@@ -30,7 +30,8 @@
       "Bash(bash .superpowers/sdd/scripts/task-brief PLAN.md 13)",
       "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\task-brief\" PLAN.md 13)",
       "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\review-package\" 5fb2cff HEAD)",
-      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\task-brief\" \"G:/ai暑校/PLAN.md\" 14 2>&1)"
+      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\task-brief\" \"G:/ai暑校/PLAN.md\" 14 2>&1)",
+      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\review-package\" d02ba55 HEAD 2>&1)"
     ]
   }
 }

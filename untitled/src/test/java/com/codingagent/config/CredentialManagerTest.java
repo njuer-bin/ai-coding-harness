@@ -3,6 +3,7 @@ package com.codingagent.config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,5 +30,13 @@ class CredentialManagerTest {
         // overwrite with a different key
         cm.store("tampered-key");
         assertEquals("tampered-key", cm.load());
+    }
+
+    @Test
+    void testCorruptedFileReturnsNull(@TempDir Path tempDir) throws Exception {
+        Path credFile = tempDir.resolve("cred.json");
+        CredentialManager cm = new CredentialManager(credFile.toString());
+        Files.writeString(credFile, "!!!not-base64!!!");
+        assertNull(cm.load());
     }
 }
