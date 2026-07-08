@@ -32,4 +32,19 @@ class ToolRegistryTest {
         assertFalse(result.isSuccess());
         assertTrue(result.getStderr().contains("Unknown tool"));
     }
+
+    @Test
+    void testTimeoutConfiguration() {
+        ToolRegistry registry = new ToolRegistry();
+        assertEquals(30000L, registry.getDefaultTimeoutMs());
+        registry.setDefaultTimeoutMs(60000L);
+        assertEquals(60000L, registry.getDefaultTimeoutMs());
+    }
+
+    @Test
+    void testNullActionReturnsError() {
+        ToolRegistry registry = new ToolRegistry();
+        ToolResult result = registry.execute(null);
+        assertFalse(result.isSuccess());
+    }
 }
