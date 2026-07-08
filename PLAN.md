@@ -58,11 +58,11 @@
 | 8 | Git + LintCheck | ✅ **已通过** | 3 | `mvn test -Dtest=GitToolTest,LintCheckToolTest` 7/7 PASS |
 | 9 | Guardrail | ✅ **已通过** | 2 | `mvn test -Dtest=GuardrailTest` 13/13 PASS |
 | 10 | Validator | ✅ **已通过** | 2 | `mvn test -Dtest=ValidatorTest` 3/3 PASS |
-| 11 | FailureClassifier | ⏳ | 2 | `mvn test -Dtest=FailureClassifierTest` 5/5 PASS |
-| 12 | RetryOrchestrator | ⏳ | 2 | `mvn test -Dtest=RetryOrchestratorTest` 6/6 PASS |
-| 13 | Memory | ⏳ | 2 | `mvn test -Dtest=MemoryTest` 3/3 PASS |
-| 14 | Config + CredentialManager | ⏳ | 2 | `mvn test -Dtest=CredentialManagerTest` 3/3 PASS |
-| 15 | Engine 主循环 | ⏳ | 4,9,10,11,12,13,14 | `mvn test -Dtest=EngineTest` 2/2 PASS |
+| 11 | FailureClassifier | ✅ **已通过** | 2 | `mvn test -Dtest=FailureClassifierTest` 7/7 PASS |
+| 12 | RetryOrchestrator | ✅ **已通过** | 2 | `mvn test -Dtest=RetryOrchestratorTest` 7/7 PASS |
+| 13 | Memory | ✅ **已通过** | 2 | `mvn test -Dtest=MemoryTest` 4/4 PASS |
+| 14 | Config + CredentialManager | ✅ **已通过** | 2 | `mvn test -Dtest=CredentialManagerTest,ConfigTest` 6/6 PASS |
+| 15 | Engine 主循环 | ▶️ **进行中** | 4,9,10,11,12,13,14 | `mvn test -Dtest=EngineTest` 待完成 |
 | 16 | CLI 层 | ⏳ | 15 | `java -jar coding-agent.jar` 启动 |
 | 17 | DeepSeekProvider | ⏳ | 4 | 手动测试（需真实 API Key） |
 | 18 | 机制演示脚本 | ⏳ | 4,9,10,11,12 | `mvn test -Dtest=Demo1GuardrailTest,Demo2FeedbackLoopTest,Demo3EndToEndTest` 全 PASS |
