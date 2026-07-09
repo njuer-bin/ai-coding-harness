@@ -51,6 +51,12 @@ public class WebServer {
         server.start();
         System.out.println("WebUI server started at http://localhost:" + port + "/");
         System.out.println("Press Ctrl+C to stop.");
+        // Block main thread so the daemon executor keeps running
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void handleIndex(HttpExchange exchange) throws IOException {
