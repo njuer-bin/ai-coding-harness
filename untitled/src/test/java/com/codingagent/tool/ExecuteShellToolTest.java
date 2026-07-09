@@ -28,4 +28,12 @@ class ExecuteShellToolTest {
         assertFalse(result.isSuccess());
         assertEquals(1, result.getExitCode());
     }
+
+    @Test
+    void testCrossPlatformDetection() {
+        ExecuteShellTool tool = new ExecuteShellTool();
+        String os = tool.getOsName();
+        assertNotNull(os);
+        assertTrue(os.contains("windows") || os.contains("linux") || os.contains("mac"));
+    }
 }
