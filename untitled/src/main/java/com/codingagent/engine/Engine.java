@@ -21,11 +21,6 @@ import com.codingagent.tool.ToolRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
-@FunctionalInterface
-interface HITLCallback {
-    boolean confirm(Action action);
-}
-
 public class Engine {
 
     private final LLMProvider llm;
@@ -103,7 +98,6 @@ public class Engine {
 
                 boolean shouldRetry = orchestrator.shouldRetry(feedback);
                 if (shouldRetry) {
-                    feedback.setShouldRetry(true);
                     MemoryEntry entry = new MemoryEntry();
                     entry.setContent("Retrying after failure: " + feedback.getDetail());
                     entry.setType("FEEDBACK");
