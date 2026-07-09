@@ -31,7 +31,23 @@
       "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\task-brief\" PLAN.md 13)",
       "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\review-package\" 5fb2cff HEAD)",
       "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\task-brief\" \"G:/ai暑校/PLAN.md\" 14 2>&1)",
-      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\review-package\" d02ba55 HEAD 2>&1)"
+      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\review-package\" d02ba55 HEAD 2>&1)",
+      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\review-package\" 5855f98 HEAD 2>&1)",
+      "Bash(bash \"C:\\\\Users\\\\13742\\\\.claude\\\\skills\\\\subagent-driven-development\\\\scripts\\\\task-brief\" \"G:/ai暑校/PLAN.md\" 15 2>&1)",
+      "Bash(PLAN_FILE=PLAN.md bash -c ' *)",
+      "Bash(bash C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package c596862 432c072)",
+      "Bash(mvn package *)",
+      "Bash(bash C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package 724f54d e377001)",
+      "Bash(bash C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package e377001 1692858)",
+      "Bash(javap -c -p target/classes com/codingagent/log/Logger)",
+      "Bash(javap -c -p target/classes 'com/codingagent/log/Logger$Level')",
+      "Bash(javap -c -p \"G:/ai暑校/untitled/target/classes/com/codingagent/log/Logger.class\")",
+      "Bash(javap *)",
+      "Bash(java -cp \"target/classes;target/test-classes\" -Dorg.junit.jupiter.api.TestInstances.Lifecycle.PER_CLASS org.junit.platform.console.ConsoleLauncher --select-class com.codingagent.log.LoggerTest)",
+      "Bash(java *)",
+      "Bash(bash C:/Users/13742/.claude/skills/subagent-driven-development/scripts/review-package c822f63 HEAD)",
+      "Bash(git diff *)",
+      "Bash(git status *)"
     ]
   }
 }

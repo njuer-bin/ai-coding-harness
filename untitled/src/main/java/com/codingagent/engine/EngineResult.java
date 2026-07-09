@@ -10,12 +10,6 @@ public class EngineResult {
 
     public EngineResult() {}
 
-    public EngineResult(boolean success, String summary) {
-        this.success = success;
-        this.summary = summary;
-        this.log = new ArrayList<>();
-    }
-
     public EngineResult(boolean success, String summary, List<String> log) {
         this.success = success;
         this.summary = summary;

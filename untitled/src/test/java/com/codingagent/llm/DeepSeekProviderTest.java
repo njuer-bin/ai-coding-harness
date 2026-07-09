@@ -67,7 +67,7 @@ class DeepSeekProviderTest {
         LLMResponse response = provider.parseResponse(json);
         assertNotNull(response);
         assertNotNull(response.getAction());
-        assertEquals("read_file", response.getAction().getType());
+        assertEquals("READ_FILE", response.getAction().getType());
         assertFalse(response.isStopRequested());
     }
 

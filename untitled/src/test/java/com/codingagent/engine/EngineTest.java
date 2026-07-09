@@ -34,6 +34,17 @@ class EngineTest {
         Memory memory = new MemoryImpl(tempDir.resolve("mem.json").toString());
         ConfigImpl config = new ConfigImpl(tempDir.toString());
 
+        // Register a mock tool that returns success
+        registry.register(new Tool() {
+            @Override
+            public String getName() { return "EXECUTE_COMMAND"; }
+
+            @Override
+            public ToolResult execute(Action action) {
+                return new ToolResult(true, 0, "done", "", 100L);
+            }
+        });
+
         Engine engine = new Engine(llm, registry, guardrail, validator, classifier, orchestrator, memory, config);
         engine.setHITLCallback(action -> true); // 自动批准
 
@@ -44,6 +55,7 @@ class EngineTest {
 
         EngineResult result = engine.run("push code");
         assertNotNull(result);
+        assertTrue(result.isSuccess());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.codingagent.guardrail;
 
 import com.codingagent.model.Action;
 import com.codingagent.model.enums.GuardrailResult;
+import java.nio.file.Path;
 import java.util.List;
 
 public class GuardrailImpl implements Guardrail {
@@ -41,8 +42,9 @@ public class GuardrailImpl implements Guardrail {
             }
         }
 
-        // 检查高危文件写入路径
+        // 检查高危文件写入路径，先规范化防止路径穿越
         if ("WRITE_FILE".equals(type)) {
+            path = Path.of(path).normalize().toString().replace('\\', '/');
             for (String dangerousPath : DANGEROUS_PATHS) {
                 if (path.startsWith(dangerousPath)) {
                     return GuardrailResult.BLOCK;

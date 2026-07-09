@@ -207,7 +207,7 @@ public class DeepSeekProvider implements LLMProvider {
         for (int i = 0; i < lines.length; i++) {
             String trimmed = lines[i].trim();
             if (trimmed.toUpperCase().startsWith("ACTION:")) {
-                String type = trimmed.substring("ACTION:".length()).trim();
+                String type = trimmed.substring("ACTION:".length()).trim().toUpperCase();
                 if (!type.isEmpty()) {
                     Map<String, Object> params = new java.util.LinkedHashMap<>();
                     for (int j = i + 1; j < lines.length; j++) {

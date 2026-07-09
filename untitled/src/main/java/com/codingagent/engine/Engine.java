@@ -52,7 +52,7 @@ public class Engine {
 
     public EngineResult run(String taskDescription) {
         List<String> log = new ArrayList<>();
-        int maxIterations = 10;
+        int maxIterations = config.getMaxIterations();
 
         Context context = new Context();
         context.setTaskDescription(taskDescription);
@@ -91,8 +91,8 @@ public class Engine {
             // Validate result
             Feedback feedback = validator.validate(toolResult, action);
 
-            // Handle failure with retry logic
-            if (feedback.getStatus() == FeedbackStatus.FAIL) {
+            // Handle failure with retry logic (FAIL or TOOL_ERROR)
+            if (feedback.getStatus() != FeedbackStatus.PASS) {
                 FailureCategory category = classifier.classify(toolResult);
                 feedback.setCategory(category);
 
