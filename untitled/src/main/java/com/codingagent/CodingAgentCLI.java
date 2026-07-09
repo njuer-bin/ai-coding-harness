@@ -21,6 +21,7 @@ import com.codingagent.tool.ToolRegistry;
 import com.codingagent.tool.WriteFileTool;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.util.Scanner;
@@ -29,8 +30,14 @@ import java.util.Scanner;
          description = "AI Coding Agent Harness — manages the full lifecycle of an AI coding agent")
 public class CodingAgentCLI implements Runnable {
 
-    @Parameters(index = "0", description = "Task description for the coding agent")
+    @Parameters(index = "0", description = "Task description for the coding agent", arity = "0..1")
     private String task;
+
+    @Option(names = "--server", description = "Start in WebUI server mode (default port: 8080)")
+    private boolean serverMode;
+
+    @Option(names = "--port", description = "Port for WebUI server (default: 8080)")
+    private int port = 8080;
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new CodingAgentCLI()).execute(args);
@@ -75,7 +82,19 @@ public class CodingAgentCLI implements Runnable {
 
     @Override
     public void run() {
-        // Obtain task description: from CLI argument or stdin prompt
+        // WebUI mode: start embedded HTTP server
+        if (serverMode) {
+            try {
+                WebServer webServer = new WebServer(port);
+                webServer.start();
+            } catch (Exception e) {
+                System.err.println("Failed to start WebUI server: " + e.getMessage());
+                System.exit(1);
+            }
+            return;
+        }
+
+        // CLI mode: obtain task description from argument or stdin
         String resolvedTask = this.task;
         Scanner scanner = new Scanner(System.in);
 

@@ -53,6 +53,32 @@ CLI 启动后将：
 2. 遇到需要人工确认的操作（如 `git push`、危险命令）时，弹出 `[y/N]` 交互提示
 3. 执行完成后打印结果（状态、摘要、日志）
 
+### WebUI 模式（线上部署）
+
+```bash
+# 启动 WebUI 服务器（默认端口 8080）
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar --server
+
+# 指定端口
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar --server --port=3000
+```
+
+启动后在浏览器中访问 `http://localhost:8080/`，通过 Web 表单提交任务并查看执行结果。
+
+### Docker 部署
+
+```bash
+# 构建镜像
+cd untitled && mvn package -DskipTests
+docker build -t coding-agent .
+
+# 运行 CLI 模式
+docker run -i --rm coding-agent "your task description"
+
+# 运行 WebUI 模式（暴露端口）
+docker run -p 8080:8080 --rm coding-agent --server
+```
+
 ---
 
 ## 分发
