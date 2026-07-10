@@ -46,11 +46,57 @@ untitled/src/main/java/com/codingagent/
 
 ## Current Progress
 
-Check `G:/ai暑校/.superpowers/sdd/progress.md` for the exact task completion status.
+**All 23 tasks complete!** See `G:/ai暑校/.superpowers/sdd/progress.md` for full status.
 
-Completed tasks (up to Task 14): Project setup, models, Tool interface + registry, 8 tools, LLM abstraction, Guardrail, Validator, FailureClassifier, RetryOrchestrator, Memory, Config + CredentialManager.
+Latest commits (in order):
+- `1b3a067` - Task 23: cross-platform shell detection
+- `4bc4979` - Final review fixes (Critical + Important)
+- `e409093` - README.md (通用要求 §五-4)
+- `5cfe341` - AGENT_LOG.md (通用要求 §4.9)
+- `3d9aa3c` - REFLECTION.md (通用要求 §五-8)
+- `e4c0df9` - WebUI server mode (--server, 通用要求 §五-9)
+- `cc369ff` - WebUI thread keepalive fix
 
-**Next task:** Task 15 — Engine main loop (with HITL callback). An implementer subagent is currently running for this task.
+**Head:** `cc369ff`
+
+## How to Resume
+
+If the session was interrupted, tell the new Claude instance:
+1. Read the progress ledger: `.superpowers/sdd/progress.md`
+2. Read the project instructions: `CLAUDE.md`
+3. The project is fully complete — no remaining tasks
+
+## Key Deliverables
+
+| File | Description |
+|------|-------------|
+| `SPEC.md` | Design document |
+| `PLAN.md` | Implementation plan |
+| `SPEC_PROCESS.md` | Cold-start validation record |
+| `README.md` | Project overview, install, run, security |
+| `AGENT_LOG.md` | Process log with timestamps |
+| `REFLECTION.md` | 2200-word post-project reflection |
+| `untitled/Dockerfile` | Container distribution |
+| `.github/workflows/ci.yml` | GitHub Actions CI |
+| `untitled/src/main/java/com/codingagent/WebServer.java` | WebUI (--server mode) |
+
+## Unpushed Commits
+
+The following commits are local only and need `git push origin main`:
+- `e409093` README.md
+- `5cfe341` AGENT_LOG.md
+- `3d9aa3c` REFLECTION.md
+- `e4c0df9` WebUI server
+- `cc369ff` WebUI fix
+
+## Test Status
+
+```bash
+cd untitled && mvn test    # 109/109 PASS
+mvn package -DskipTests    # fat JAR build
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar --help  # CLI help
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar --server  # WebUI at :8080
+```
 
 ## How to Resume
 

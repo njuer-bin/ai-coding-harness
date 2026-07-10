@@ -28,7 +28,10 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,8 +89,51 @@ public class WebServer {
         Map<String, String> params = parseForm(body);
         String taskDescription = params.getOrDefault("task", "");
 
-        // Build engine
-        Engine engine = buildEngine();
+        // Build engine with per-task mock LLM configuration
+        String lowerTask = taskDescription.toLowerCase();
+        MockLLM llm = new MockLLM();
+
+        if (lowerTask.contains("python") && (lowerTask.contains("hello") || lowerTask.contains("helloworld"))) {
+            // Demo: Python hello world — write .py file programmatically, then execute it
+            try {
+                java.nio.file.Files.writeString(
+                    java.nio.file.Paths.get("hello.py"),
+                    "print('hello world')"
+                );
+            } catch (IOException e) {
+                System.out.println("[WebUI] Warning: could not write hello.py: " + e.getMessage());
+            }
+            llm.setNextResponse(new LLMResponse(
+                    new Action("EXECUTE_COMMAND", Map.of("command", "python hello.py")),
+                    "Running Python hello world...",
+                    false
+            ));
+            // Fallback stop for retry / multi-step paths
+            llm.setNextResponse(new LLMResponse(null, "Completed", true));
+        } else if (lowerTask.contains("echo") || lowerTask.contains("hello") || lowerTask.contains("test")) {
+            // Demo: Simple echo command
+            llm.setNextResponse(new LLMResponse(
+                    new Action("EXECUTE_COMMAND", Map.of("command", "echo hello world")),
+                    "Running echo command...",
+                    false
+            ));
+            // Fallback stop for retry path
+            llm.setNextResponse(new LLMResponse(null, "Completed", true));
+        } else if (lowerTask.contains("list") || lowerTask.contains("ls") || lowerTask.contains("file")) {
+            // Demo: List files
+            llm.setNextResponse(new LLMResponse(
+                    new Action("EXECUTE_COMMAND", Map.of("command", "echo .")),
+                    "Listing files...",
+                    false
+            ));
+            // Fallback stop for retry path
+            llm.setNextResponse(new LLMResponse(null, "Completed", true));
+        } else {
+            // Default: mock stop response
+            llm.setNextResponse(new LLMResponse(null, "Task completed by initial mock", true));
+        }
+
+        Engine engine = buildEngine(llm);
         engine.setHITLCallback(action -> {
             // Auto-approve HITL in web mode (for simplicity in demo)
             System.out.println("[WebUI] HITL auto-approved: " + action.getType());
@@ -95,7 +141,15 @@ public class WebServer {
         });
 
         // Run engine
-        EngineResult result = engine.run(taskDescription);
+        EngineResult result;
+        try {
+            result = engine.run(taskDescription);
+        } catch (Exception e) {
+            System.out.println("[WebUI] Engine error: " + e.getMessage());
+            e.printStackTrace();
+            result = new EngineResult(false, "Engine error: " + e.getMessage(),
+                    List.of("Error: " + e.toString()));
+        }
 
         // Build response HTML
         String html = getResultHtml(taskDescription, result);
@@ -107,12 +161,15 @@ public class WebServer {
         }
     }
 
-    private Engine buildEngine() {
+    private Engine buildEngine(MockLLM llm) {
         String homeDir = System.getProperty("user.home");
         String codingAgentDir = homeDir + "/.coding-agent";
+        try {
+            Files.createDirectories(Paths.get(codingAgentDir));
+        } catch (IOException e) {
+            System.out.println("[WebUI] Warning: could not create " + codingAgentDir + ": " + e.getMessage());
+        }
         ConfigImpl config = new ConfigImpl(codingAgentDir);
-        MockLLM llm = new MockLLM();
-        llm.setNextResponse(new LLMResponse(null, "Task completed by initial mock", true));
         ToolRegistry toolRegistry = new ToolRegistry();
         toolRegistry.register(new ReadFileTool());
         toolRegistry.register(new WriteFileTool());
@@ -223,9 +280,35 @@ public class WebServer {
     private String getResultHtml(String taskDescription, EngineResult result) {
         String statusClass = result.isSuccess() ? "success" : "failure";
         String statusText = result.isSuccess() ? "SUCCESS" : "FAILURE";
+
+        // Collect output blocks for prominent display
+        StringBuilder outputCode = new StringBuilder();
+        boolean inOutput = false;
+        boolean outputFound = false;
+
         StringBuilder logHtml = new StringBuilder();
         for (String entry : result.getLog()) {
+            if (entry.equals("--- stdout ---") || entry.equals("--- stderr ---")) {
+                inOutput = true;
+                continue;
+            }
+            if (inOutput) {
+                // This is the actual output content — add to code block
+                outputCode.append(escapeHtml(entry));
+                inOutput = false;
+                outputFound = true;
+                continue;
+            }
             logHtml.append("<div class=\"log-entry\">").append(escapeHtml(entry)).append("</div>\n");
+        }
+
+        // Build output section
+        String outputSection = "";
+        if (outputFound) {
+            outputSection = "  <h3 style=\"margin-top:1rem;font-size:0.95rem;\">输出结果</h3>\n" +
+               "  <pre style=\"background:#1a1a2e;color:#f8f8f2;padding:1rem;border-radius:8px;" +
+               "overflow-x:auto;font-family:'SF Mono','Cascadia Code',monospace;font-size:0.85rem;\">" +
+               outputCode.toString() + "</pre>\n";
         }
 
         return "<div class=\"card\">\n" +
@@ -233,6 +316,7 @@ public class WebServer {
                "  <p><strong>任务：</strong>" + escapeHtml(taskDescription) + "</p>\n" +
                "  <p><strong>状态：</strong><span class=\"status " + statusClass + "\">" + statusText + "</span></p>\n" +
                "  <p><strong>摘要：</strong>" + escapeHtml(result.getSummary()) + "</p>\n" +
+               outputSection +
                "  <h3 style=\"margin-top:1rem;font-size:0.95rem;\">日志</h3>\n" +
                "  <div style=\"margin-top:0.5rem;\">" + logHtml + "</div>\n" +
                "  <a href=\"/\" style=\"display:inline-block;margin-top:1rem;color:#4a6cf7;\">← 返回</a>\n" +

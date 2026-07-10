@@ -121,9 +121,27 @@ public class Engine {
             if (success) {
                 summary = "Completed: " + action.getType();
                 log.add(summary);
+                // Include tool stdout/stderr in log for display
+                if (toolResult.getStdout() != null && !toolResult.getStdout().isEmpty()) {
+                    log.add("--- stdout ---");
+                    log.add(toolResult.getStdout());
+                }
+                if (toolResult.getStderr() != null && !toolResult.getStderr().isEmpty()) {
+                    log.add("--- stderr ---");
+                    log.add(toolResult.getStderr());
+                }
             } else {
                 summary = "Failed: " + feedback.getDetail();
                 log.add(summary);
+                // Include tool output even on failure for debugging
+                if (toolResult.getStdout() != null && !toolResult.getStdout().isEmpty()) {
+                    log.add("--- stdout ---");
+                    log.add(toolResult.getStdout());
+                }
+                if (toolResult.getStderr() != null && !toolResult.getStderr().isEmpty()) {
+                    log.add("--- stderr ---");
+                    log.add(toolResult.getStderr());
+                }
             }
             return new EngineResult(success, summary, log);
         }
