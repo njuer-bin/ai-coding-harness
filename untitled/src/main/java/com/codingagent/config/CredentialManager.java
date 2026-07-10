@@ -65,4 +65,16 @@ public class CredentialManager {
             return null;
         }
     }
+
+    /**
+     * Clears the stored credential by deleting the credentials file.
+     * Returns true if the file was deleted, false if it didn't exist.
+     */
+    public boolean clear() {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            return false;
+        }
+        return file.delete();
+    }
 }

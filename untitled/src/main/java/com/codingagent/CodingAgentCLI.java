@@ -1,6 +1,7 @@
 package com.codingagent;
 
 import com.codingagent.config.ConfigImpl;
+import com.codingagent.config.CredentialManager;
 import com.codingagent.engine.Engine;
 import com.codingagent.engine.EngineResult;
 import com.codingagent.feedback.FailureClassifierImpl;
@@ -25,9 +26,11 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 
 @Command(name = "coding-agent", mixinStandardHelpOptions = true,
-         description = "AI Coding Agent Harness — manages the full lifecycle of an AI coding agent")
+         description = "AI Coding Agent Harness — manages the full lifecycle of an AI coding agent",
+         subcommands = {CodingAgentCLI.CredentialCommand.class})
 public class CodingAgentCLI implements Runnable {
 
     @Parameters(index = "0", description = "Task description for the coding agent", arity = "0..1")
@@ -44,9 +47,16 @@ public class CodingAgentCLI implements Runnable {
         System.exit(exitCode);
     }
 
+    static String getCodingAgentDir() {
+        return System.getProperty("user.home") + "/.coding-agent";
+    }
+
+    static CredentialManager createCredentialManager() {
+        return new CredentialManager(getCodingAgentDir() + "/credentials");
+    }
+
     private Engine buildEngine() {
-        String homeDir = System.getProperty("user.home");
-        String codingAgentDir = homeDir + "/.coding-agent";
+        String codingAgentDir = getCodingAgentDir();
 
         // Config
         ConfigImpl config = new ConfigImpl(codingAgentDir);
@@ -130,6 +140,84 @@ public class CodingAgentCLI implements Runnable {
         System.out.println("\n--- Log ---");
         for (String entry : result.getLog()) {
             System.out.println("  " + entry);
+        }
+    }
+
+    // ─── credential subcommand ───────────────────────────────────────────────
+
+    @Command(name = "credential", mixinStandardHelpOptions = true,
+             description = "Manage API credentials (Base64 + XOR obfuscated storage)",
+             subcommands = {
+                 CredentialCommand.InitCommand.class,
+                 CredentialCommand.StatusCommand.class,
+                 CredentialCommand.UpdateCommand.class,
+                 CredentialCommand.ClearCommand.class
+             })
+    static class CredentialCommand implements Runnable {
+
+        @Command(name = "init", description = "Initialize or overwrite the API key")
+        static class InitCommand implements Callable<Integer> {
+            @Parameters(index = "0", description = "API key to store")
+            private String apiKey;
+
+            @Override
+            public Integer call() {
+                CredentialManager cm = createCredentialManager();
+                cm.store(apiKey);
+                System.out.println("Credential saved to " + getCodingAgentDir() + "/credentials");
+                return 0;
+            }
+        }
+
+        @Command(name = "status", description = "Show whether a credential is configured")
+        static class StatusCommand implements Callable<Integer> {
+            @Override
+            public Integer call() {
+                CredentialManager cm = createCredentialManager();
+                String key = cm.load();
+                if (key == null || key.isEmpty()) {
+                    System.out.println("No credential configured.");
+                    System.out.println("Use: coding-agent credential init <api-key>");
+                    return 1;
+                }
+                System.out.println("Credential configured: " + key.substring(0, Math.min(8, key.length())) + "...");
+                return 0;
+            }
+        }
+
+        @Command(name = "update", description = "Update the existing API key")
+        static class UpdateCommand implements Callable<Integer> {
+            @Parameters(index = "0", description = "New API key")
+            private String apiKey;
+
+            @Override
+            public Integer call() {
+                CredentialManager cm = createCredentialManager();
+                cm.store(apiKey);
+                System.out.println("Credential updated.");
+                return 0;
+            }
+        }
+
+        @Command(name = "clear", description = "Delete the stored credential")
+        static class ClearCommand implements Callable<Integer> {
+            @Override
+            public Integer call() {
+                CredentialManager cm = createCredentialManager();
+                boolean deleted = cm.clear();
+                if (deleted) {
+                    System.out.println("Credential cleared.");
+                } else {
+                    System.out.println("No credential to clear.");
+                }
+                return 0;
+            }
+        }
+
+        @Override
+        public void run() {
+            // No subcommand given — show help
+            new CommandLine(this).usage(System.out);
         }
     }
 }

@@ -20,6 +20,7 @@ public class ConfigImpl implements Config {
     private static final int DEFAULT_TIMEOUT_MS = 30000;
     private static final boolean DEFAULT_DEBUG = false;
     private static final String DEFAULT_API_KEY = "";
+    private static final int DEFAULT_MAX_ITERATIONS = 10;
 
     public ConfigImpl(String configDir) {
         this.configFile = new File(configDir, FILE_NAME);
@@ -126,6 +127,17 @@ public class ConfigImpl implements Config {
     @Override
     public void setDebugMode(boolean debug) {
         data.put("debugMode", debug);
+        saveToFile();
+    }
+
+    @Override
+    public int getMaxIterations() {
+        return getInt("maxIterations", DEFAULT_MAX_ITERATIONS);
+    }
+
+    @Override
+    public void setMaxIterations(int maxIterations) {
+        data.put("maxIterations", maxIterations);
         saveToFile();
     }
 }

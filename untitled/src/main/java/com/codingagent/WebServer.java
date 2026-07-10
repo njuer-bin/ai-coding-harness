@@ -135,8 +135,9 @@ public class WebServer {
 
         Engine engine = buildEngine(llm);
         engine.setHITLCallback(action -> {
-            // Auto-approve HITL in web mode (for simplicity in demo)
-            System.out.println("[WebUI] HITL auto-approved: " + action.getType());
+            // Auto-approve HITL in web mode — the engine logs "HITL approved"
+            // to the result log, visible in the browser result panel
+            System.out.println("[WebUI] HITL auto-approved: " + action.getType() + " (visible in result log)");
             return true;
         });
 

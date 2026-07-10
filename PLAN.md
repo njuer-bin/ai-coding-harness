@@ -62,10 +62,10 @@
 | 12 | RetryOrchestrator | ✅ **已通过** | 2 | `mvn test -Dtest=RetryOrchestratorTest` 7/7 PASS |
 | 13 | Memory | ✅ **已通过** | 2 | `mvn test -Dtest=MemoryTest` 4/4 PASS |
 | 14 | Config + CredentialManager | ✅ **已通过** | 2 | `mvn test -Dtest=CredentialManagerTest,ConfigTest` 6/6 PASS |
-| 15 | Engine 主循环 | ▶️ **进行中** | 4,9,10,11,12,13,14 | `mvn test -Dtest=EngineTest` 待完成 |
-| 16 | CLI 层 | ⏳ | 15 | `java -jar coding-agent.jar` 启动 |
-| 17 | DeepSeekProvider | ⏳ | 4 | 手动测试（需真实 API Key） |
-| 18 | 机制演示脚本 | ⏳ | 4,9,10,11,12 | `mvn test -Dtest=Demo1GuardrailTest,Demo2FeedbackLoopTest,Demo3EndToEndTest` 全 PASS |
+| 15 | Engine 主循环 | ✅ **已通过** | 4,9,10,11,12,13,14 | `mvn test -Dtest=EngineTest` 3/3 PASS |
+| 16 | CLI 层 | ✅ **已通过** | 15 | `java -jar coding-agent.jar` 启动正常，--help 正常 |
+| 17 | DeepSeekProvider | ✅ **已通过** | 4 | `mvn test -Dtest=DeepSeekProviderTest` 8/8 PASS |
+| 18 | 机制演示脚本 | ✅ **已通过** | 4,9,10,11,12 | `mvn test -Dtest=Demo1GuardrailTest,Demo2FeedbackLoopTest,Demo3EndToEndTest` 全 PASS |
 | 19 | CI 流水线 | ⏳ | 全部 | GitHub Actions 绿色 PASS |
 | 20 | Docker 镜像 | ⏳ | 19 | `docker build` + `docker run` 成功 |
 | 21 | 全局日志模块 | ⏳ | 3 | 日志输出彩色分级 |

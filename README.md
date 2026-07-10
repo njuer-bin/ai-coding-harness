@@ -53,6 +53,24 @@ CLI 启动后将：
 2. 遇到需要人工确认的操作（如 `git push`、危险命令）时，弹出 `[y/N]` 交互提示
 3. 执行完成后打印结果（状态、摘要、日志）
 
+### 凭据管理
+
+```bash
+# 查看凭据状态
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar credential status
+
+# 初始化/更新 API Key
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar credential init "your-deepseek-api-key"
+
+# 更新 API Key
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar credential update "your-new-api-key"
+
+# 清除凭据
+java -jar target/coding-agent-1.0.0-jar-with-dependencies.jar credential clear
+```
+
+凭据使用 **Base64 + XOR（0x5A）混淆加密** 存储在 `~/.coding-agent/credentials`，**绝不硬编码**进源码。
+
 ### WebUI 模式（线上部署）
 
 ```bash
