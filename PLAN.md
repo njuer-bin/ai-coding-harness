@@ -66,11 +66,11 @@
 | 16 | CLI 层 | ✅ **已通过** | 15 | `java -jar coding-agent.jar` 启动正常，--help 正常 |
 | 17 | DeepSeekProvider | ✅ **已通过** | 4 | `mvn test -Dtest=DeepSeekProviderTest` 8/8 PASS |
 | 18 | 机制演示脚本 | ✅ **已通过** | 4,9,10,11,12 | `mvn test -Dtest=Demo1GuardrailTest,Demo2FeedbackLoopTest,Demo3EndToEndTest` 全 PASS |
-| 19 | CI 流水线 | ⏳ | 全部 | GitHub Actions 绿色 PASS |
-| 20 | Docker 镜像 | ⏳ | 19 | `docker build` + `docker run` 成功 |
-| 21 | 全局日志模块 | ⏳ | 3 | 日志输出彩色分级 |
-| 22 | SPEC 冷验证 | ⏳ | 2 | 陌生 agent 完成 1-2 个 Task |
-| 23 | 跨平台 Shell 适配 | ⏳ | 6 | Windows/Linux 双平台测试 |
+| 19 | CI 流水线 | ✅ **已通过** | 全部 | GitHub Actions 绿色 PASS |
+| 20 | Docker 镜像 | ✅ **已通过** | 19 | `docker build` + `docker run` 成功 |
+| 21 | 全局日志模块 | ✅ **已通过** | 3 | 日志输出彩色分级 |
+| 22 | SPEC 冷验证 | ✅ **已通过** | 2 | 陌生 agent 完成 3 个 Task，32 测试通过 |
+| 23 | 跨平台 Shell 适配 | ✅ **已通过** | 6 | Windows/Linux 双平台测试 |
 
 ---
 
