@@ -115,6 +115,50 @@ docker run --rm coding-agent --help
 docker run -it --rm coding-agent "your task description"
 ```
 
+### Docker Compose
+
+```bash
+docker-compose up --build
+```
+
+### GitHub Container Registry
+
+```bash
+# 拉取镜像
+docker pull ghcr.io/njuer-bin/ai-coding-harness:latest
+
+# 运行 WebUI
+docker run -p 8080:8080 --rm ghcr.io/njuer-bin/ai-coding-harness:latest --server --port=8080
+```
+
+### 云部署（公网访问）
+
+本项目 WebUI 可一键部署到以下免费平台：
+
+| 平台 | 部署方式 | 费用 |
+|------|---------|------|
+| [Render.com](https://render.com) | Docker 部署，连接 GitHub 仓库即可 | 免费（容器休眠后需重新加载） |
+| [Railway.app](https://railway.app) | 从 GitHub 导入项目 | 每月 $5 免费额度 |
+| [Fly.io](https://fly.io) | `fly launch` 命令部署 Docker | 免费额度 |
+
+**部署步骤（Render.com 为例）：**
+1. 前往 https://render.com 注册免费账号
+2. 点击 "New +" → "Web Service"
+3. 连接 GitHub 仓库 `njuer-bin/ai-coding-harness`
+4. 选择 "Docker" 环境
+5. 启动命令：`java -jar /app/coding-agent.jar --server --port=8080`
+6. 点击 "Deploy" → 等待 2-3 分钟
+7. 获得公网 URL：`https://coding-agent-harness.onrender.com`
+
+**部署架构：**
+```
+用户浏览器 → Render.com 负载均衡 → Docker 容器 (Java 21)
+                                    → 嵌入式 HTTP 服务器 (:8080)
+                                    → MockLLM/DeepSeekProvider
+```
+
+> **注意：** Render.com 免费容器在 15 分钟无活动后进入休眠，再次访问时自动唤醒（延迟约 10-30 秒）。
+
 ### 已知限制
 
 | 项目 | 说明 |
