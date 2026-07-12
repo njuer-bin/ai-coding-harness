@@ -61,12 +61,25 @@ public class Engine {
 
             LLMResponse response = llm.send(context);
 
+            // Log LLM reasoning
+            if (response.getReasoning() != null && !response.getReasoning().isEmpty()) {
+                log.add("--- LLM Reasoning ---");
+                log.add(response.getReasoning());
+            }
+
             if (response.isStopRequested()) {
                 log.add("LLM requested stop");
                 return new EngineResult(true, "Task completed: LLM requested stop", log);
             }
 
             Action action = response.getAction();
+
+            // Handle null action — LLM returned reasoning but no parsable action
+            if (action == null) {
+                log.add("LLM returned no action (only reasoning). Stopping.");
+                return new EngineResult(true, "LLM returned reasoning only: " +
+                    (response.getReasoning() != null ? response.getReasoning() : ""), log);
+            }
 
             // Guardrail check
             GuardrailResult guardResult = guardrail.check(action);

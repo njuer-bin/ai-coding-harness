@@ -7,6 +7,8 @@ import com.codingagent.feedback.FailureClassifierImpl;
 import com.codingagent.feedback.RetryOrchestratorImpl;
 import com.codingagent.feedback.ValidatorImpl;
 import com.codingagent.guardrail.GuardrailImpl;
+import com.codingagent.llm.DeepSeekProvider;
+import com.codingagent.llm.LLMProvider;
 import com.codingagent.llm.MockLLM;
 import com.codingagent.memory.MemoryImpl;
 import com.codingagent.model.Action;
@@ -88,52 +90,10 @@ public class WebServer {
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         Map<String, String> params = parseForm(body);
         String taskDescription = params.getOrDefault("task", "");
+        String apiKey = params.getOrDefault("apiKey", "").trim();
 
-        // Build engine with per-task mock LLM configuration
-        String lowerTask = taskDescription.toLowerCase();
-        MockLLM llm = new MockLLM();
-
-        if (lowerTask.contains("python") && (lowerTask.contains("hello") || lowerTask.contains("helloworld"))) {
-            // Demo: Python hello world — write .py file programmatically, then execute it
-            try {
-                java.nio.file.Files.writeString(
-                    java.nio.file.Paths.get("hello.py"),
-                    "print('hello world')"
-                );
-            } catch (IOException e) {
-                System.out.println("[WebUI] Warning: could not write hello.py: " + e.getMessage());
-            }
-            llm.setNextResponse(new LLMResponse(
-                    new Action("EXECUTE_COMMAND", Map.of("command", "python hello.py")),
-                    "Running Python hello world...",
-                    false
-            ));
-            // Fallback stop for retry / multi-step paths
-            llm.setNextResponse(new LLMResponse(null, "Completed", true));
-        } else if (lowerTask.contains("echo") || lowerTask.contains("hello") || lowerTask.contains("test")) {
-            // Demo: Simple echo command
-            llm.setNextResponse(new LLMResponse(
-                    new Action("EXECUTE_COMMAND", Map.of("command", "echo hello world")),
-                    "Running echo command...",
-                    false
-            ));
-            // Fallback stop for retry path
-            llm.setNextResponse(new LLMResponse(null, "Completed", true));
-        } else if (lowerTask.contains("list") || lowerTask.contains("ls") || lowerTask.contains("file")) {
-            // Demo: List files
-            llm.setNextResponse(new LLMResponse(
-                    new Action("EXECUTE_COMMAND", Map.of("command", "echo .")),
-                    "Listing files...",
-                    false
-            ));
-            // Fallback stop for retry path
-            llm.setNextResponse(new LLMResponse(null, "Completed", true));
-        } else {
-            // Default: mock stop response
-            llm.setNextResponse(new LLMResponse(null, "Task completed by initial mock", true));
-        }
-
-        Engine engine = buildEngine(llm);
+        // Build engine — use DeepSeekProvider if API key provided, else MockLLM
+        Engine engine = buildEngine(apiKey);
         engine.setHITLCallback(action -> {
             // Auto-approve HITL in web mode — the engine logs "HITL approved"
             // to the result log, visible in the browser result panel
@@ -162,7 +122,7 @@ public class WebServer {
         }
     }
 
-    private Engine buildEngine(MockLLM llm) {
+    private Engine buildEngine(String apiKey) {
         String homeDir = System.getProperty("user.home");
         String codingAgentDir = homeDir + "/.coding-agent";
         try {
@@ -185,6 +145,19 @@ public class WebServer {
         FailureClassifierImpl classifier = new FailureClassifierImpl();
         RetryOrchestratorImpl orchestrator = new RetryOrchestratorImpl();
         MemoryImpl memory = new MemoryImpl(codingAgentDir + "/memory.json");
+
+        // Choose LLM: DeepSeekProvider if API key provided, else MockLLM
+        LLMProvider llm;
+        if (apiKey != null && !apiKey.isEmpty()) {
+            llm = new DeepSeekProvider(apiKey, "deepseek-chat");
+            System.out.println("[WebUI] Using DeepSeekProvider (real LLM)");
+        } else {
+            MockLLM mock = new MockLLM();
+            mock.setNextResponse(new LLMResponse(null, "No API key provided. Using MockLLM.", true));
+            llm = mock;
+            System.out.println("[WebUI] No API key. Using MockLLM.");
+        }
+
         return new Engine(llm, toolRegistry, guardrail, validator, classifier, orchestrator, memory, config);
     }
 
@@ -216,6 +189,10 @@ public class WebServer {
                "    .container { max-width: 800px; margin: 0 auto; }\n" +
                "    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #1a1a2e; }\n" +
                "    p.subtitle { color: #666; margin-bottom: 2rem; font-size: 0.9rem; }\n" +
+               "    label { display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.9rem; color: #444; }\n" +
+               "    input[type=password] { width: 100%; padding: 0.75rem 1rem; font-size: 0.95rem;\n" +
+               "               border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem; }\n" +
+               "    input[type=password]:focus { outline: none; border-color: #4a6cf7; box-shadow: 0 0 0 3px rgba(74,108,247,0.1); }\n" +
                "    textarea { width: 100%; min-height: 120px; padding: 1rem; font-size: 1rem;\n" +
                "               border: 1px solid #ddd; border-radius: 8px; resize: vertical;\n" +
                "               font-family: 'SF Mono', 'Cascadia Code', monospace; }\n" +
@@ -236,6 +213,7 @@ public class WebServer {
                "              border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;\n" +
                "              margin: 1rem auto; }\n" +
                "    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }\n" +
+               "    .hint { font-size: 0.8rem; color: #999; margin-top: 0.2rem; margin-bottom: 0.5rem; }\n" +
                "    .footer { margin-top: 2rem; text-align: center; color: #999; font-size: 0.8rem; }\n" +
                "  </style>\n" +
                "</head>\n" +
@@ -244,6 +222,10 @@ public class WebServer {
                "    <h1>Coding Agent Harness</h1>\n" +
                "    <p class=\"subtitle\">AI 编码代理引擎 — 输入任务描述，引擎将组织上下文、调用 LLM、执行工具并反馈结果</p>\n" +
                "    <form id=\"runForm\" action=\"/run\" method=\"POST\">\n" +
+               "      <label for=\"apiKeyInput\">DeepSeek API Key</label>\n" +
+               "      <input type=\"password\" id=\"apiKeyInput\" name=\"apiKey\" placeholder=\"留空则使用 MockLLM（模拟模式）\">\n" +
+               "      <p class=\"hint\">输入你的 DeepSeek API Key 调用真实 LLM，留空则使用 MockLLM 模拟执行</p>\n" +
+               "      <label for=\"taskInput\">任务描述</label>\n" +
                "      <textarea name=\"task\" id=\"taskInput\" placeholder=\"例如：读取 src/main/java 下的所有 Java 文件\"></textarea>\n" +
                "      <br>\n" +
                "      <button type=\"submit\" id=\"runBtn\">运行任务</button>\n" +
@@ -258,12 +240,13 @@ public class WebServer {
                "      const loader = document.getElementById('loader');\n" +
                "      const result = document.getElementById('result');\n" +
                "      const task = document.getElementById('taskInput').value;\n" +
+               "      const apiKey = document.getElementById('apiKeyInput').value;\n" +
                "      btn.disabled = true; loader.style.display = 'block'; result.innerHTML = '';\n" +
                "      try {\n" +
                "        const res = await fetch('/run', {\n" +
                "          method: 'POST',\n" +
                "          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },\n" +
-               "          body: new URLSearchParams({ task: task })\n" +
+               "          body: new URLSearchParams({ task: task, apiKey: apiKey })\n" +
                "        });\n" +
                "        const html = await res.text();\n" +
                "        result.innerHTML = html;\n" +
@@ -287,8 +270,23 @@ public class WebServer {
         boolean inOutput = false;
         boolean outputFound = false;
 
+        // Collect LLM reasoning for prominent display
+        StringBuilder reasoningBlock = new StringBuilder();
+        boolean inReasoning = false;
+        boolean reasoningFound = false;
+
         StringBuilder logHtml = new StringBuilder();
         for (String entry : result.getLog()) {
+            if (entry.equals("--- LLM Reasoning ---")) {
+                inReasoning = true;
+                continue;
+            }
+            if (inReasoning) {
+                reasoningBlock.append(escapeHtml(entry));
+                inReasoning = false;
+                reasoningFound = true;
+                continue;
+            }
             if (entry.equals("--- stdout ---") || entry.equals("--- stderr ---")) {
                 inOutput = true;
                 continue;
@@ -301,6 +299,15 @@ public class WebServer {
                 continue;
             }
             logHtml.append("<div class=\"log-entry\">").append(escapeHtml(entry)).append("</div>\n");
+        }
+
+        // Build LLM reasoning section
+        String reasoningSection = "";
+        if (reasoningFound) {
+            reasoningSection = "  <h3 style=\"margin-top:1rem;font-size:0.95rem;color:#6a3f8f;\">🤖 LLM 推理过程</h3>\n" +
+               "  <pre style=\"background:#f8f4ff;color:#4a2f6f;padding:1rem;border-radius:8px;" +
+               "overflow-x:auto;font-family:'SF Mono','Cascadia Code',monospace;font-size:0.85rem;border:1px solid #e8dff5;\">" +
+               reasoningBlock.toString() + "</pre>\n";
         }
 
         // Build output section
@@ -317,6 +324,7 @@ public class WebServer {
                "  <p><strong>任务：</strong>" + escapeHtml(taskDescription) + "</p>\n" +
                "  <p><strong>状态：</strong><span class=\"status " + statusClass + "\">" + statusText + "</span></p>\n" +
                "  <p><strong>摘要：</strong>" + escapeHtml(result.getSummary()) + "</p>\n" +
+               reasoningSection +
                outputSection +
                "  <h3 style=\"margin-top:1rem;font-size:0.95rem;\">日志</h3>\n" +
                "  <div style=\"margin-top:0.5rem;\">" + logHtml + "</div>\n" +

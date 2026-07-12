@@ -8,6 +8,8 @@ import com.codingagent.feedback.FailureClassifierImpl;
 import com.codingagent.feedback.RetryOrchestratorImpl;
 import com.codingagent.feedback.ValidatorImpl;
 import com.codingagent.guardrail.GuardrailImpl;
+import com.codingagent.llm.DeepSeekProvider;
+import com.codingagent.llm.LLMProvider;
 import com.codingagent.llm.MockLLM;
 import com.codingagent.memory.MemoryImpl;
 import com.codingagent.model.LLMResponse;
@@ -61,9 +63,20 @@ public class CodingAgentCLI implements Runnable {
         // Config
         ConfigImpl config = new ConfigImpl(codingAgentDir);
 
-        // Mock LLM with a default stop response so the engine exits cleanly
-        MockLLM llm = new MockLLM();
-        llm.setNextResponse(new LLMResponse(null, "Task completed by initial mock", true));
+        // Use DeepSeekProvider if API key is configured, fall back to MockLLM otherwise
+        CredentialManager cm = new CredentialManager(codingAgentDir + "/credentials");
+        String apiKey = cm.load();
+
+        LLMProvider llm;
+        if (apiKey != null && !apiKey.isEmpty()) {
+            llm = new DeepSeekProvider(apiKey, "deepseek-chat");
+            System.out.println("Using DeepSeekProvider (real LLM)");
+        } else {
+            System.out.println("No API key found. Using MockLLM (simulated).");
+            MockLLM mock = new MockLLM();
+            mock.setNextResponse(new LLMResponse(null, "No API key configured", true));
+            llm = mock;
+        }
 
         // Tool registry — register all 8 tools
         ToolRegistry toolRegistry = new ToolRegistry();
@@ -180,7 +193,7 @@ public class CodingAgentCLI implements Runnable {
                     System.out.println("Use: coding-agent credential init <api-key>");
                     return 1;
                 }
-                System.out.println("Credential configured: " + key.substring(0, Math.min(8, key.length())) + "...");
+                System.out.println("Credential configured.");
                 return 0;
             }
         }
